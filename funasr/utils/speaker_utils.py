@@ -12,23 +12,23 @@ import torch.nn.functional as F
 import torchaudio.compliance.kaldi as Kaldi
 from torch import nn
 
-from funasr.utils.modelscope_file import File
+from funasr.models.campplus.utils import File
 
 
 def check_audio_list(audio: list):
     audio_dur = 0
     for i in range(len(audio)):
         seg = audio[i]
-        assert seg[1] >= seg[0], "modelscope error: Wrong time stamps."
-        assert isinstance(seg[2], np.ndarray), "modelscope error: Wrong data type."
+        assert seg[1] >= seg[0], "FunASR error: Wrong time stamps."
+        assert isinstance(seg[2], np.ndarray), "FunASR error: Wrong data type."
         assert (
             int(seg[1] * 16000) - int(seg[0] * 16000) == seg[2].shape[0]
-        ), "modelscope error: audio data in list is inconsistent with time length."
+        ), "FunASR error: audio data in list is inconsistent with time length."
         if i > 0:
-            assert seg[0] >= audio[i - 1][1], "modelscope error: Wrong time stamps."
+            assert seg[0] >= audio[i - 1][1], "FunASR error: Wrong time stamps."
         audio_dur += seg[1] - seg[0]
     return audio_dur
-    # assert audio_dur > 5, 'modelscope error: The effective audio duration is too short.'
+
 
 
 def sv_preprocess(inputs: Union[np.ndarray, list]):
@@ -42,7 +42,7 @@ def sv_preprocess(inputs: Union[np.ndarray, list]):
             data = torch.from_numpy(data).unsqueeze(0)
             data = data.squeeze(0)
         elif isinstance(inputs[i], np.ndarray):
-            assert len(inputs[i].shape) == 1, "modelscope error: Input array should be [N, T]"
+            assert len(inputs[i].shape) == 1, "FunASR error: Input array should be [N, T]"
             data = inputs[i]
             if data.dtype in ["int16", "int32", "int64"]:
                 data = (data / (1 << 15)).astype("float32")
@@ -51,7 +51,7 @@ def sv_preprocess(inputs: Union[np.ndarray, list]):
             data = torch.from_numpy(data)
         else:
             raise ValueError(
-                "modelscope error: The input type is restricted to audio address and nump array."
+                "FunASR error: The input type is restricted to audio address and nump array."
             )
         output.append(data)
     return output

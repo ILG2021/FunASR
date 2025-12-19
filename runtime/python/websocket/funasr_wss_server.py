@@ -17,29 +17,29 @@ parser.add_argument("--port", type=int, default=10095, required=False, help="grp
 parser.add_argument(
     "--asr_model",
     type=str,
-    default="iic/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch",
-    help="model from modelscope",
+    default="paraformer-zh",
+    help="model name or path",
 )
 parser.add_argument("--asr_model_revision", type=str, default="v2.0.4", help="")
 parser.add_argument(
     "--asr_model_online",
     type=str,
-    default="iic/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-online",
-    help="model from modelscope",
+    default="paraformer-zh-streaming",
+    help="model name or path",
 )
 parser.add_argument("--asr_model_online_revision", type=str, default="v2.0.4", help="")
 parser.add_argument(
     "--vad_model",
     type=str,
-    default="iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
-    help="model from modelscope",
+    default="fsmn-vad",
+    help="model name or path",
 )
 parser.add_argument("--vad_model_revision", type=str, default="v2.0.4", help="")
 parser.add_argument(
     "--punc_model",
     type=str,
-    default="iic/punc_ct-transformer_zh-cn-common-vad_realtime-vocab272727",
-    help="model from modelscope",
+    default="ct-punc",
+    help="model name or path",
 )
 parser.add_argument("--punc_model_revision", type=str, default="v2.0.4", help="")
 parser.add_argument("--ngpu", type=int, default=1, help="0 for cpu, 1 for gpu")

@@ -30,7 +30,6 @@ requirements = {
         # "g2p",
         # "nara_wpe",
         # PAI
-        "oss2",
         # "edit-distance",
         # "textgrid",
         # "protobuf",
@@ -41,7 +40,6 @@ requirements = {
         "tensorboardX",
         # "rotary_embedding_torch",
         "requests",
-        "modelscope",
     ],
     # train: The modules invoked when training only.
     "train": [
@@ -89,7 +87,6 @@ requirements = {
         "accelerate",
         "tiktoken",
         "einops",
-        "transformers_stream_generator>=0.0.4",
         "scipy",
         "torchvision",
         "pillow",

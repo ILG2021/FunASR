@@ -22,17 +22,7 @@ def main():
     model_dir = args.model_name
     output_dir = args.model_name
     if not Path(args.model_name).exists():
-        from modelscope.hub.snapshot_download import snapshot_download
-
-        try:
-            model_dir = snapshot_download(
-                args.model_name, cache_dir=args.export_dir, revision=args.model_revision
-            )
-            output_dir = os.path.join(args.export_dir, args.model_name)
-        except:
-            raise "model_dir must be model_name in modelscope or local path downloaded from modelscope, but is {}".format(
-                model_dir
-            )
+        raise ValueError(f"Model {args.model_name} not found locally. ModelScope is not supported in this version. Please provide a local path or use a different tool.")
     if args.export:
         model_file = os.path.join(model_dir, "model.onnx")
         if args.quantize:

@@ -150,7 +150,7 @@ class ClusterBackend(torch.nn.Module):
     def forward(self, X, **params):
         # clustering and return the labels
         k = params["oracle_num"] if "oracle_num" in params else None
-        assert len(X.shape) == 2, "modelscope error: the shape of input should be [N, C]"
+        assert len(X.shape) == 2, "FunASR error: the shape of input should be [N, C]"
         if X.shape[0] < 20:
             return np.zeros(X.shape[0], dtype="int")
         if X.shape[0] < 2048 or k is not None:

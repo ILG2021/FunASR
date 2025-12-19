@@ -175,50 +175,6 @@ class HTTPStorage(Storage):
         raise NotImplementedError("write_text is not supported by HTTP Storage")
 
 
-class OSSStorage(Storage):
-    """OSS storage."""
-
-    def __init__(self, oss_config_file=None):
-        # read from config file or env var
-        raise NotImplementedError("OSSStorage.__init__ to be implemented in the future")
-
-    def read(self, filepath):
-        raise NotImplementedError("OSSStorage.read to be implemented in the future")
-
-    def read_text(self, filepath, encoding="utf-8"):
-        raise NotImplementedError("OSSStorage.read_text to be implemented in the future")
-
-    @contextlib.contextmanager
-    def as_local_path(self, filepath: str) -> Generator[Union[str, Path], None, None]:
-        """Download a file from ``filepath``.
-
-        ``as_local_path`` is decorated by :meth:`contextlib.contextmanager`. It
-        can be called with ``with`` statement, and when exists from the
-        ``with`` statement, the temporary path will be released.
-
-        Args:
-            filepath (str): Download a file from ``filepath``.
-
-        Examples:
-            >>> storage = OSSStorage()
-            >>> # After existing from the ``with`` clause,
-            >>> # the path will be removed
-            >>> with storage.get_local_path('http://path/to/file') as path:
-            ...     # do something here
-        """
-        try:
-            f = tempfile.NamedTemporaryFile(delete=False)
-            f.write(self.read(filepath))
-            f.close()
-            yield f.name
-        finally:
-            os.remove(f.name)
-
-    def write(self, obj: bytes, filepath: Union[str, Path]) -> None:
-        raise NotImplementedError("OSSStorage.write to be implemented in the future")
-
-    def write_text(self, obj: str, filepath: Union[str, Path], encoding: str = "utf-8") -> None:
-        raise NotImplementedError("OSSStorage.write_text to be implemented in the future")
 
 
 G_STORAGES = {}
@@ -226,7 +182,6 @@ G_STORAGES = {}
 
 class File(object):
     _prefix_to_storage: dict = {
-        "oss": OSSStorage,
         "http": HTTPStorage,
         "https": HTTPStorage,
         "local": LocalStorage,

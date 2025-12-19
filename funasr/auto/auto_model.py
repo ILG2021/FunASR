@@ -112,12 +112,6 @@ class AutoModel:
 
     def __init__(self, **kwargs):
 
-        try:
-            from funasr.utils.version_checker import check_for_update
-
-            check_for_update(disable=kwargs.get("disable_update", False))
-        except:
-            pass
 
         log_level = getattr(logging, kwargs.get("log_level", "INFO").upper())
         logging.basicConfig(level=log_level)
@@ -176,7 +170,7 @@ class AutoModel:
     def build_model(**kwargs):
         assert "model" in kwargs
         if "model_conf" not in kwargs:
-            logging.info("download models from model hub: {}".format(kwargs.get("hub", "ms")))
+            logging.info("download models from model hub: {}".format(kwargs.get("hub", "hf")))
             kwargs = download_model(**kwargs)
 
         set_all_random_seed(kwargs.get("seed", 0))

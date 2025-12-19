@@ -7,12 +7,12 @@ import aiofiles
 import ffmpeg
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
-from modelscope.utils.logger import get_logger
+
 
 from funasr import AutoModel
 
-logger = get_logger(log_level=logging.INFO)
-logger.setLevel(logging.INFO)
+logger = logging.getLogger('funasr')
+logging.basicConfig(level=logging.INFO)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
