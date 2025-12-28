@@ -58,10 +58,11 @@ torchrun --nproc_per_node 1 \
 ++dataset_conf.batch_size=20000 \
 ++dataset_conf.batch_type="token" \
 ++dataset_conf.num_workers=4 \
-++train_conf.max_epoch=50 \
+++train_conf.max_epoch=20 \
 ++train_conf.log_interval=10 \
-++train_conf.validate_interval=2000 \
-++train_conf.save_checkpoint_interval=2000 \
+++train_conf.validate_interval=1000 \
+++train_conf.save_checkpoint_interval=1000 \
+++train_conf.early_stopping_patience=3 \
 ++train_conf.keep_nbest_models=10 \
 ++optim_conf.lr=0.00002 \
 ++output_dir="./output_paraformer_finetune"
