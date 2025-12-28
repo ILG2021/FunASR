@@ -3,6 +3,7 @@ import argparse
 import json
 import librosa
 import random
+import csv
 
 def parse_context_length_logic(line):
     """
@@ -16,41 +17,41 @@ def parse_context_length_logic(line):
         return context_len
     return 0
 
-def convert_ljspeech_to_funasr_jsonl(data_dir, output_dir, split_ratio=0.9, target_column="target"):
+def convert_audiofolder_to_funasr_jsonl(data_dir, output_dir, split_ratio=0.95, target_column="target"):
     """
-    将 LJSpeech 格式数据集直接转换为 FunASR 训练所需的 jsonl 格式。
-    并采用与官方工具一致的 source_len 和 target_len 计算方式。
+    将 AudioFolder 格式数据集转换为 FunASR 训练所需的 jsonl 格式。
+    
+    AudioFolder 格式预期:
+    - data_dir 下有 metadata.csv
+    - metadata.csv 第一行是 file_name,sentence (逗号分隔)
+    - 音频文件路径相对于 data_dir
     """
-    wav_dir = os.path.join(data_dir, "wavs")
     metadata_path = os.path.join(data_dir, "metadata.csv")
 
     if not os.path.exists(metadata_path):
-        # 兼容兼容简易格式
-        metadata_path = os.path.join(data_dir, "transcript.csv")
-
-    if not os.path.exists(metadata_path):
-        print(f"错误: 找不到 metadata.csv 或 transcript.csv 在 {data_dir}")
+        print(f"错误: 找不到 metadata.csv 在 {data_dir}")
         return
 
     os.makedirs(output_dir, exist_ok=True)
 
     data = []
     print("正在处理音频文件并计算长度，请稍候...")
+    
     with open(metadata_path, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) < 2:
+        # 使用 csv 模块处理，自动处理第一行表头
+        reader = csv.DictReader(f)
+        for row in reader:
+            # 兼容可能的列名变体
+            file_name = row.get("file_name")
+            transcript = row.get("sentence")
+            
+            if not file_name or not transcript:
                 continue
+                
+            audio_id = os.path.splitext(file_name)[0]
+            # 音频路径相对于 data_dir
+            wav_path = os.path.abspath(os.path.join(data_dir, file_name))
             
-            audio_id = parts[0]
-            transcript = parts[1]
-            # 路径逻辑
-            wav_path = os.path.abspath(os.path.join(wav_dir, f"{audio_id}"))
-            
-            if not os.path.exists(wav_path) and not wav_path.endswith(".wav"):
-                if os.path.exists(wav_path + ".wav"):
-                    wav_path += ".wav"
-
             if os.path.exists(wav_path):
                 # 直接使用官方 source_len 逻辑
                 source_len = parse_context_length_logic(wav_path)
@@ -73,7 +74,7 @@ def convert_ljspeech_to_funasr_jsonl(data_dir, output_dir, split_ratio=0.9, targ
     random.seed(42)  # 固定种子保证结果一致
     random.shuffle(data)
 
-    # 简单划分训练集和验证集
+    # 划分训练集和验证集
     train_size = int(len(data) * split_ratio)
     train_data = data[:train_size]
     val_data = data[train_size:]
@@ -89,11 +90,11 @@ def convert_ljspeech_to_funasr_jsonl(data_dir, output_dir, split_ratio=0.9, targ
     save_jsonl(val_data, "val.jsonl")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="LJSpeech to FunASR JSONL format converter (Official Logic)")
-    parser.add_argument("--data_dir", type=str, required=True, help="LJSpeech 数据集根目录")
+    parser = argparse.ArgumentParser(description="AudioFolder to FunASR JSONL format converter (file_name,sentence)")
+    parser.add_argument("--data_dir", type=str, required=True, help="AudioFolder 数据集根目录 (包含 metadata.csv)")
     parser.add_argument("--output_dir", type=str, default="data/list", help="输出目录")
     parser.add_argument("--split", type=float, default=0.95, help="训练集比例")
     parser.add_argument("--target_name", type=str, default="target", help="JSONL 中文本列的名称 (通常为 target 或 text)")
     
     args = parser.parse_args()
-    convert_ljspeech_to_funasr_jsonl(args.data_dir, args.output_dir, args.split, args.target_name)
+    convert_audiofolder_to_funasr_jsonl(args.data_dir, args.output_dir, args.split, args.target_name)

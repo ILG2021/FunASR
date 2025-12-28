@@ -25,38 +25,23 @@ FunASR/
 └── output_paraformer/         # 训练结果输出
 ```
 
-## 2. 数据格式转换
+## 2. 数据格式转换 (一步到位生成 JSONL)
 
-首先使用提供的脚本将 LJSpeech 格式转换为 FunASR 内部的 `wav.scp` 和 `text.txt` 格式，并自动划分训练集与验证集。
+使用提供的脚本将 LJSpeech 格式直接转换为 FunASR 训练所需的 `jsonl` 格式，并自动划分训练集与验证集。
 
 ```bash
 python scripts/ljspeech_to_funasr.py \
   --data_dir data/ljspeech \
   --output_dir data/list \
-  --split 0.95
+  --split 0.95 \
+  --target_name "target"
 ```
 
-执行后，将在 `data/list` 目录下生成：
-- `train_wav.scp`, `train_text.txt`
-- `val_wav.scp`, `val_text.txt`
+执行后，将在 `data/list` 目录下直接生成：
+- `train.jsonl` (包含 key, source, target)
+- `val.jsonl`
 
-## 3. 生成训练用的 JSONL 格式
-
-FunASR 的核心训练脚本使用 `jsonl` 格式。使用 `scp2jsonl` 工具进行转换：
-
-```bash
-# 生成训练集
-scp2jsonl \
-++scp_file_list='["data/list/train_wav.scp", "data/list/train_text.txt"]' \
-++data_type_list='["source", "text"]' \
-++jsonl_file_out="data/list/train.jsonl"
-
-# 生成验证集
-scp2jsonl \
-++scp_file_list='["data/list/val_wav.scp", "data/list/val_text.txt"]' \
-++data_type_list='["source", "text"]' \
-++jsonl_file_out="data/list/val.jsonl"
-```
+此步骤替换了原有的 `scp` + `scp2jsonl` 的繁琐过程。
 
 ## 4. 启动微调 (Fine-tuning)
 
