@@ -5,7 +5,7 @@
 ## 0. 安装依赖
 ```bash
 python 3.10
-pip install torch==2.4.0+cu124 torchaudio==2.4.0+cu124 --extra-index-url https://download.pytorch.org/whl/cu124
+pip install torch torchaudio --extra-index-url https://download.pytorch.org/whl/cu128
 pip install -e .
 ```
 
@@ -52,9 +52,9 @@ export CUDA_VISIBLE_DEVICES="0" # 根据实际情况指定 GPU ID
 
 torchrun --nproc_per_node 1 \
 -m funasr.bin.train_ds \
-++model="paraformer-zh" \
-++train_data_set_list="data/list/train.jsonl" \
-++valid_data_set_list="data/list/val.jsonl" \
+++model="JunHowie/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch" \
+++train_data_set_list="data/train.jsonl" \
+++valid_data_set_list="data/val.jsonl" \
 ++dataset_conf.batch_size=20000 \
 ++dataset_conf.batch_type="token" \
 ++dataset_conf.num_workers=4 \
@@ -75,18 +75,17 @@ torchrun --nproc_per_node 1 \
 - `++optim_conf.lr=0.00002`: 微调建议使用较小的学习率。
 - `++train_conf.max_epoch`: 训练轮数。
 
-## 5. 推理与验证
+## 5. 导出onnx
 
 微调结束后，可以直接加载输出目录中的模型进行测试：
-
-```python
-from funasr import AutoModel
-
-# 加载微调后的模型
-model = AutoModel(model="./output_paraformer_finetune")
-
-res = model.generate(input="data/ljspeech/wavs/test_sample.wav")
-print(res)
+创建pytorch 2.0.1虚拟环境（高版本报错）
+```bash
+pip install torch==2.0.1 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
+```
+然后执行
+```bash
+python scripts/export_paraformer.py
+python convert_sherpa_onnx.py
 ```
 
 ## 6. 注意事项

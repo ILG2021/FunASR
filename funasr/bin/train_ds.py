@@ -3,6 +3,8 @@
 
 import os
 import sys
+
+import huggingface_hub
 import torch
 import torch.nn as nn
 import hydra
@@ -20,8 +22,9 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.algorithms.join import Join
 from torch.distributed.fsdp.sharded_grad_scaler import ShardedGradScaler
-from funasr.train_utils.average_nbest_models import average_checkpoints
 
+from funasr.models.bicif_paraformer.model import BiCifParaformer
+from funasr.train_utils.average_nbest_models import average_checkpoints
 from funasr.register import tables
 from funasr.optimizers import optim_classes
 from funasr.train_utils.trainer_ds import Trainer
