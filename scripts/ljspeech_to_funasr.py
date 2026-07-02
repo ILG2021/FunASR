@@ -212,7 +212,7 @@ if __name__ == "__main__":
         help="LJSpeech 数据集根目录，可传多个，用空格分隔，例如: "
         "--data_dir data/ds1 data/ds2 data/ds3",
     )
-    parser.add_argument("--output_dir", type=str, default="data/list", help="输出目录")
+    parser.add_argument("--output_dir", type=str, default="data/", help="输出目录")
     parser.add_argument(
         "--split", type=float, default=0.95, help="训练集比例（指定了 --val_size 时此参数会被忽略）"
     )

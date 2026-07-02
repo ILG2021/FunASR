@@ -29,3 +29,6 @@ examples/aishell/llm_asr_nar/*
 *egg-info
 env/
 runtime/android/AndroidClient/.gradle
+output_paraformer_finetune
+data/train.jsonl
+data/val.jsonl

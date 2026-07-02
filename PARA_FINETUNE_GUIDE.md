@@ -5,7 +5,7 @@
 ## 0. 安装依赖
 ```bash
 python 3.10
-pip install torch torchaudio --extra-index-url https://download.pytorch.org/whl/cu128
+pip install torch==2.8.0 torchaudio==2.8.0 --extra-index-url https://download.pytorch.org/whl/cu128
 pip install -e .
 ```
 
@@ -30,11 +30,10 @@ FunASR/
 使用提供的脚本将 LJSpeech 格式直接转换为 FunASR 训练所需的 `jsonl` 格式，并自动划分训练集与验证集。
 
 ```bash
-python scripts/ljspeech_to_funasr.py \
-  --data_dir data/ljspeech \
-  --output_dir data/list \
-  --val_size 100 \
-  --target_name "target"
+python scripts\ljspeech_to_funasr.py `
+  --data_dir data\ds1 data\ds2 `
+  --output_dir data\list `
+  --val_size 2000
 ```
 
 执行后，将在 `data/list` 目录下直接生成：
@@ -48,23 +47,22 @@ python scripts/ljspeech_to_funasr.py \
 推荐使用 `torchrun` 进行分布式或单卡训练。以下是微调参数配置建议：
 
 ```bash
-export CUDA_VISIBLE_DEVICES="0" # 根据实际情况指定 GPU ID
 
-torchrun --nproc_per_node 1 \
--m funasr.bin.train_ds \
-++model="JunHowie/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch" \
-++train_data_set_list="data/train.jsonl" \
-++valid_data_set_list="data/val.jsonl" \
-++dataset_conf.batch_size=20000 \
-++dataset_conf.batch_type="token" \
-++dataset_conf.num_workers=4 \
-++train_conf.max_epoch=20 \
-++train_conf.log_interval=10 \
-++train_conf.validate_interval=1000 \
-++train_conf.save_checkpoint_interval=1000 \
-++train_conf.early_stopping_patience=3 \
-++train_conf.keep_nbest_models=10 \
-++optim_conf.lr=0.00002 \
+python `
+-m funasr.bin.train_ds `
+++model="JunHowie/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch" `
+++train_data_set_list="data/train.jsonl" `
+++valid_data_set_list="data/val.jsonl" `
+++dataset_conf.batch_size=20000 `
+++dataset_conf.batch_type="token" `
+++dataset_conf.num_workers=4 `
+++train_conf.max_epoch=20 `
+++train_conf.log_interval=10 `
+++train_conf.validate_interval=1000 `
+++train_conf.save_checkpoint_interval=1000 `
+++train_conf.early_stopping_patience=3 `
+++train_conf.keep_nbest_models=10 `
+++optim_conf.lr=0.00002 `
 ++output_dir="./output_paraformer_finetune"
 ```
 
