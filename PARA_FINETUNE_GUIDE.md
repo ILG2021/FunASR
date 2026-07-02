@@ -33,7 +33,7 @@ FunASR/
 python scripts/ljspeech_to_funasr.py \
   --data_dir data/ljspeech \
   --output_dir data/list \
-  --split 0.95 \
+  --val_size 100 \
   --target_name "target"
 ```
 
